@@ -44,3 +44,4 @@ class TrainTestSplitter(object):
                                          test_size=test_size,
                                          random_state=random_state,
                                          shuffle=shuffle)
+        return self
