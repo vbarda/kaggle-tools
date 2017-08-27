@@ -6,27 +6,35 @@ Tools for kaggle competitions
 *Cross Validation*:
 
 ```
-from models.cross_validation import CrossValidation
-cv = CrossValidation(df)
+from models.cross_validation import TrainTestSplitter
+splitter = TrainTestSplitter(df).split(test_size=.2)
 
 from sklearn.linear_model import LogisticRegression
 log_reg = LogisticRegression()
-log_reg.fit(cv.X_train, cv.y_train)
-log_reg.predict(cv.X_test)
+log_reg.fit(splitter.X_train, splitter.y_train)
+log_reg.predict(splitter.X_test)
 ```
 
 *Model Inspector*:
 
 ```
 from models.inspection import ModelInspection
-from sklearn.linear_model import LogisticRegression, LinearRegression
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import f1_score, roc_auc_score
 
-models = {
-	'lin_reg': LinearRegression(),
+clf_dict = {
     'log_reg': LogisticRegression(),
-    'lasso': LassoCV()
+    'knn_5': KNeighborsClassifier(n_neighbors=5),
+    'knn_10': KNeighborsClassifier(n_neighbors=10)
 }
 
-mi = ModelInspector(df, models, test_size=.2).fit()
+metrics_dict = {
+   'f1_score': f1_score,
+   'roc_auc': roc_auc_score
+}
+
+mi = ModelInspector(df, 'binary_classification', clf_dict, metrics_dict,
+                    None, 'target', False, test_size=.2).fit()
 mi.test_metrics.loc['roc_auc_score'].sort_values(ascending=False)
 ```
