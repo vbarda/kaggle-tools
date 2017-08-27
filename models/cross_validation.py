@@ -47,6 +47,8 @@ class TrainTestSplitter(object):
                                          test_size=test_size,
                                          random_state=random_state,
                                          shuffle=shuffle)
+        return self
+
 
 def kfold_cv(n_splits, shuffle, estimator, X, y):
     '''performs K-fold cross validation on a specified number of subsamples
