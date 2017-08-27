@@ -36,5 +36,5 @@ metrics_dict = {
 
 mi = ModelInspector(df, 'binary_classification', clf_dict, metrics_dict,
                     None, 'target', False, test_size=.2).fit()
-mi.test_metrics.loc['roc_auc_score'].sort_values(ascending=False)
+mi.test_metrics.loc['roc_auc'].sort_values(ascending=False)
 ```
