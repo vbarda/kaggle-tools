@@ -1,5 +1,6 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
+from sklearn import clone
+from sklearn.model_selection import train_test_split, KFold
 
 DEFAULT_TEST_SIZE = .3
 DEFAULT_RANDOM_STATE = 1234
@@ -45,3 +46,26 @@ class TrainTestSplitter(object):
                                          random_state=random_state,
                                          shuffle=shuffle)
         return self
+
+
+def get_kfold_cv_scores(n_splits, shuffle, estimator, X, y, agg_func):
+    '''performs K-fold cross validation on a specified number of subsamples
+    Args:
+        n_splits: (int) number of subsamples used for cross validation
+        shuffle: (bool) passed to sklearn.model_selection.KFold
+        estimator: (string) name of the sklearn estimator
+        X: (pd.DataFrame) part of the source df with features
+        y: (pd.Series) part of the source df with target values
+        agg_func: (func) function to aggregate scores from each fold
+    '''
+    score_list = []
+    for train_index, test_index in KFold(n_splits=n_splits, shuffle=shuffle).split(X, y):
+        X_train = X.iloc[train_index]
+        y_train = y.iloc[train_index]
+        X_test = X.iloc[test_index]
+        y_test = y.iloc[test_index]
+        _estimator = clone(estimator)
+        _estimator.fit(X_train, y_train)
+        score = _estimator.score(X_test, y_test)
+        score_list.append(score)
+    return agg_func(score_list)
