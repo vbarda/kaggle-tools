@@ -8,7 +8,7 @@ DEFAULT_RANDOM_STATE = 1234
 
 class TrainTestSplitter(object):
     def __init__(self, df, feature_names, target_name):
-        '''Split the data into train and test sets, and store the splits in
+        '''Split the data into train and valid sets, and store the splits in
         sklearn-friendly format
         Args:
             df: (pd.DataFrame) source df with features and target
@@ -29,22 +29,22 @@ class TrainTestSplitter(object):
         self.X = self.df[feature_names]
         self.y = self.df[target_name]
 
-    def split(self, test_size=DEFAULT_TEST_SIZE,
+    def split(self, valid_size=DEFAULT_TEST_SIZE,
               random_state=DEFAULT_RANDOM_STATE, shuffle=True):
-        '''split into training and test samples
+        '''split into training and valid samples
         Args:
-            test_size: (float) share of the data that will be used as a test set
+            valid_size: (float) share of the data that will be used as a valid set
             random_state: (int) passed to
                 sklearn.model_selection.train_test_split
             shuffle: (bool) passed to sklearn.model_selection.train_test_split
         '''
         (self.X_train,
-         self.X_test,
+         self.X_valid,
          self.y_train,
-         self.y_test) = train_test_split(self.X, self.y,
-                                         test_size=test_size,
-                                         random_state=random_state,
-                                         shuffle=shuffle)
+         self.y_valid) = train_test_split(self.X, self.y,
+                                          valid_size=valid_size,
+                                          random_state=random_state,
+                                          shuffle=shuffle)
         return self
 
 
@@ -59,13 +59,13 @@ def get_kfold_cv_scores(n_splits, shuffle, estimator, X, y, agg_func):
         agg_func: (func) function to aggregate scores from each fold
     '''
     score_list = []
-    for train_index, test_index in KFold(n_splits=n_splits, shuffle=shuffle).split(X, y):
+    for train_index, valid_index in KFold(n_splits=n_splits, shuffle=shuffle).split(X, y):
         X_train = X.iloc[train_index]
         y_train = y.iloc[train_index]
-        X_test = X.iloc[test_index]
-        y_test = y.iloc[test_index]
+        X_valid = X.iloc[valid_index]
+        y_valid = y.iloc[valid_index]
         _estimator = clone(estimator)
         _estimator.fit(X_train, y_train)
-        score = _estimator.score(X_test, y_test)
+        score = _estimator.score(X_valid, y_valid)
         score_list.append(score)
     return agg_func(score_list)
