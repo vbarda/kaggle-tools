@@ -2,7 +2,7 @@ import pandas as pd
 from sklearn import clone
 from sklearn.model_selection import train_test_split, KFold
 
-DEFAULT_TEST_SIZE = .3
+DEFAULT_VALID_SIZE = .3
 DEFAULT_RANDOM_STATE = 1234
 
 
@@ -29,7 +29,7 @@ class TrainTestSplitter(object):
         self.X = self.df[feature_names]
         self.y = self.df[target_name]
 
-    def split(self, valid_size=DEFAULT_TEST_SIZE,
+    def split(self, valid_size=DEFAULT_VALID_SIZE,
               random_state=DEFAULT_RANDOM_STATE, shuffle=True):
         '''split into training and valid samples
         Args:
@@ -42,7 +42,7 @@ class TrainTestSplitter(object):
          self.X_valid,
          self.y_train,
          self.y_valid) = train_test_split(self.X, self.y,
-                                          valid_size=valid_size,
+                                          test_size=valid_size,
                                           random_state=random_state,
                                           shuffle=shuffle)
         return self

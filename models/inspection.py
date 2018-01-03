@@ -1,8 +1,10 @@
 import logging
 
+from funcy import zipdict
 import pandas as pd
 from sklearn import clone, metrics
 from sklearn.base import is_regressor, is_classifier
+from sklearn.pipeline import Pipeline
 
 from models.cross_validation import TrainTestSplitter
 
@@ -20,6 +22,13 @@ DEFAULT_REGRESSOR_SCORERS = (metrics.r2_score,
 def make_default_metrics_dict(scorers):
     ''''''
     return {scorer.__name__: scorer for scorer in scorers}
+
+
+def get_coefs(feature_names, model):
+    '''Make a dict with feature names and coefficients'''
+    if isinstance(model, Pipeline):
+        model = model.steps[-1][1]
+    return zipdict(feature_names, model.coef_)
 
 
 class ModelInspector(TrainTestSplitter):
