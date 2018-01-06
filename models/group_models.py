@@ -47,6 +47,8 @@ def predict_with_group_models(df, feature_names, groupby, fitted_group_models, i
     grp_preds_dfs = []
     for grp_name, grp_df in tqdm(df.groupby(groupby)):
         x_df = xgb.DMatrix(grp_df[feature_names]) if use_xgboost else grp_df[feature_names]
+        if grp_name not in fitted_group_models:
+            continue
         grp_preds = fitted_group_models[grp_name].predict(x_df)
         grp_preds_df = grp_df.set_index(index_cols).assign(yhat=grp_preds)[['yhat']]
         grp_preds_dfs.append(grp_preds_df)
