@@ -3,7 +3,7 @@ import pandas as pd
 from utils.validation import validate_iterable
 
 
-def make_ar_features(df, colname, lags=[1]):
+def make_ar_features(df, colname, lags=[1], keep_ar_features_only=True):
     ''''''
     # validate inputs
     validate_iterable(lags)
@@ -19,4 +19,6 @@ def make_ar_features(df, colname, lags=[1]):
         feature_name = '{}___{}'.format(colname, lag)
         ar_feature_names.append(feature_name)
         ar_df[feature_name] = df[colname].shift(lag)
-    return ar_df[ar_feature_names]
+    if keep_ar_features_only:
+        return ar_df[ar_feature_names]
+    return ar_df

@@ -28,7 +28,7 @@ def get_coefs(feature_names, model):
     '''Make a dict with feature names and coefficients'''
     if isinstance(model, Pipeline):
         model = model.steps[-1][1]
-    return zipdict(feature_names, model.coef_)
+    return pd.Series(zipdict(feature_names, model.coef_))
 
 
 class ModelInspector(TrainTestSplitter):
